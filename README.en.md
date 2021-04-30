@@ -6,7 +6,7 @@ Including common profiles, dotfiles, and some useful scripts.
 
 Suitable for
 
- * Linux
+ * Linux (debian serial)
  * macOS
  * Cygwin (partly)
 

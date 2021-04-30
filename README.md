@@ -6,7 +6,7 @@
 
 适用于：
 
- * Linux
+ * Linux (debian serial)
  * macOS
  * Cygwin (部分)
 
