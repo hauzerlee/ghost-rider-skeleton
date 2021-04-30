@@ -31,5 +31,5 @@ Suitable for
 
 ### bashrc
 
-After `deploy.sh` executed, original ~/.bashrc will be backed up to ~/.bashrc.orig, `bashrc` and `bashrc.d` in this project will be put into current user's home directory as symbol link, named ~/.bashrc and ~/.bashrc.d.
+After `deploy.sh` executed, sourcing ~/.bashrc.d/bashrc.personal will be append to ~/.bashrc.
 

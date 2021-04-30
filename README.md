@@ -23,5 +23,5 @@
 
 ### bashrc
 
-执行 `deploy.sh` 后，该文件会以符号链接的方式替换用户目录中原有的 .bashrc，而原有的 ~/.bashrc 文件会被更名成 ~/.bashrc.orig。
+执行 `deploy.sh` 后，调用 ~/.bashrc.d/bashrc.personal 的命令会被追加到 ~/.bashrc 文件的末尾
 
