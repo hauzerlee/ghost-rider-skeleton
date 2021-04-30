@@ -14,14 +14,6 @@ fi
 #test -f ~/.bashrc.personal && source ~/.bashrc.personal
 ############################################################
 
-OSNAME=$(uname -s)
-if test "${OSNAME}" = "Linux"; then
-    alias ls='ls --color'
-elif test "${OSNAME}" = "Darwin"; then
-    alias ls='ls -G'
-fi
-alias grep='grep --color=auto'
-
 if test "${TERM}" != "linux"; then
     parse_git_branch_for_prompt() {
         branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
@@ -42,24 +34,6 @@ export HISTFILESIZE=50000000
 
 export EDITOR=vim
 export VISUAL=vim
-
-# Virtualenvwrapper
-export WORKON_HOME=${HOME}/.virtualenvs
-if test -z "${VIRTUALENVWRAPPER_PYTHON}"; then
-    if test "${OSNAME}" = "Darwin"; then
-        export VIRTUALENVWRAPPER_PYTHON=$(${WHICH} python2.7)
-    fi
-fi
-if test -z "${VIRTUAL_ENV}"; then
-    if ! type workon >/dev/null 2>&1; then
-        if test -f /usr/local/bin/virtualenvwrapper.sh; then
-            source /usr/local/bin/virtualenvwrapper.sh
-        fi
-    fi
-    if type workon >/dev/null 2>&1; then
-        test ! -z "${VIRTUALENV_NAME}" && workon ${VIRTUALENV_NAME}
-    fi
-fi
 
 # 用于执行其他的 bashrc 文件
 if test ! -z "${OTHER_BASHRCS}"; then
