@@ -180,18 +180,6 @@ if test $? -eq 0 -a ! -f ${HOME}/.warprc; then
 fi
 STEP=$((STEP + 1))
 
-echo ">>> ${STEP}.  Fetching additional files from internet"
-TMUX_PLUGINS_DIR=${HOME}/.tmux/plugins
-if test ! -d ${TMUX_PLUGINS_DIR}/tpm; then
-    echo -n "    fetching tmux plugins manager ... "
-    git clone https://github.com/tmux-plugins/tpm.git ${TMUX_PLUGINS_DIR}/tpm
-    echo "    done"
-else
-    echo "    tmux plugins manager exists, skip"
-fi
-#echo "done"
-STEP=$((STEP + 1))
-
 echo ">>> ${STEP}.  Copying sample local config files"
 for TARGET in $(find ${BASEDIR}/sample -type f 2>&1); do
     if test ! -e "${BASEDIR}/${TARGET}"; then
@@ -215,90 +203,19 @@ STEP=$((STEP + 1))
 
 echo ">>> ${STEP}.  Installing additional softwares"
 if test "${OSNAME}" = "Linux" -o "${OSNAME}" = "FreeBSD"; then
-    ADDITIONAL_SOFTWARES="curl vim-nox tmux gnupg2 vlock"
-    echo "    installing ${ADDITIONAL_SOFTWARES} ..."
-    sudo apt update && sudo apt install -y ${ADDITIONAL_SOFTWARES}
-
-    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
-        echo "    installing rvm ..."
-        curl -sSL https://rvm.io/mpapis.asc | sudo gpg2 --import -
-        curl -sSL https://rvm.io/pkuczynski.asc | sudo gpg2 --import -
-        curl -sSL https://get.rvm.io | sudo bash -s stable
-        sudo groupadd rvm
-        sudo usermod -aG rvm root
-        sudo usermod -aG rvm ${USER}
-        sudo su - ${USER} sh -c "
-        source /etc/profile.d/rvm.sh
-        echo 'export rvm_max_time_flag=20' >> ~/.rvmrc
-        rvm requirements
-        rvm install 2.7.0
-        rvm use 2.7.0 --default
-        export PATH=/usr/local/rvm/gems/ruby-2.7.0/bin:/usr/local/rvm/rubies/ruby-2.7.0/bin:${PATH}
-        gem install rail"
-    fi
-
-    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
-        echo "    installing tmuxinator ..."
-        sudo su - ${USER} sh -c "source /etc/profile.d/rvm.sh; gem install tmuxinator"
+    if test -f /etc/debian_version; then
+        ADDITIONAL_SOFTWARES="curl vim-nox tmux gnupg2"
+        echo "    installing ${ADDITIONAL_SOFTWARES} ..."
+        sudo apt update && sudo apt install -y ${ADDITIONAL_SOFTWARES}
+    elif test -f /etc/redhat-release; then
+        ADDITIONAL_SOFTWARES="curl vim-enhanced tmux gnupg2"
+        echo "    installing ${ADDITIONAL_SOFTWARES} ..."
+        sudo yum install ${ADDITIONAL_SOFTWARES}
     fi
 elif test "${OSNAME}" = "Darwin"; then
     ADDITIONAL_SOFTWARES="tmux gnupg"
     echo "    installing ${ADDITIONAL_SOFTWARES} ..."
-
-    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
-        echo "    installing rvm ..."
-        curl -sSL https://rvm.io/mpapis.asc | sudo gpg --import -
-        curl -sSL https://rvm.io/pkuczynski.asc | sudo gpg --import -
-        curl -sSL https://get.rvm.io | sudo bash -s stable
-        sudo dscl . -create /Groups/rvm
-        sudo dscl . -append /Groups/rvm GroupMembership root
-        sudo dscl . -append /Groups/rvm GroupMembership ${USER}
-        sudo su - ${USER} sh -c "
-        source /etc/profile.d/rvm.sh
-        echo 'export rvm_max_time_flag=20' >> ~/.rvmrc
-        rvm requirements
-        rvm install 2.7.0
-        rvm use 2.7.0 --default
-        export PATH=/usr/local/rvm/gems/ruby-2.7.0/bin:/usr/local/rvm/rubies/ruby-2.7.0/bin:${PATH}
-        gem install rail"
-    fi
-
-    if ! ${WHICH} brew | grep brew >/dev/null 2>&1; then
-        echo "    installing homebrew..."
-        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    fi
-
-    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
-        echo "    installing tmuxinator ..."
-        sudo su - ${USER} sh -c "source /etc/profile.d/rvm.sh; gem install tmuxinator"
-    fi
-
-    if ! ${WHICH} gpg | grep gpg >/dev/null 2>&1; then
-        echo "    installing gnupg ..."
-        brew install gnupg
-    fi
 elif echo ${OSNAME} | grep -i cygwin 2>&1 >/dev/null; then
-    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
-        curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-        curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
-        curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
-        curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -
-        curl -sSL https://get.rvm.io | bash -s stable
-
-        sh -c "
-        source ${HOME}/.rvm/scripts/rvm
-        echo 'export rvm_max_time_flag=20' >> ~/.rvmrc
-        rvm requirements
-        rvm install ruby-2.7.0
-        rvm use ruby-2.7.0 --default
-        export PATH=/home/hauze/.rvm/gems/ruby-2.7.0/bin:/home/hauze/.rvm/rubies/ruby-2.7.0/bin:${PATH}
-        gem install rail"
-    fi
-
-    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
-        echo "    installing tmuxinator ..."
-        sh -c "source ${HOME}/.rvm/scripts/rvm; gem install tmuxinator"
-    fi
 fi
 
 
