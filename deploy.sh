@@ -9,12 +9,21 @@ if test "$(uname -o 2>/dev/null)" == "Cygwin"; then
     OSNAME=Cygwin
 fi
 
+if  test -x /usr/bin/which; then
+    WHICH=/usr/bin/which
+elif  test -x /bin/which; then
+    WHICH=/bin/which
+fi
+
 STEP=0
 
-TARGETS="vimrc"
+TARGETS="bashrc.d vimrc"
 cd ${HOME}
 echo ">>> ${STEP}.  Making links ..."
 for TARGET in ${TARGETS}; do
+    if test ! -e "${BASEDIR}/${TARGET}"; then
+        continue
+    fi
     LOCAL_TARGET=.${TARGET}
     LOCAL_TARGET_ORIG=.${TARGET}.orig
     echo -n "    ${LOCAL_TARGET}: "
@@ -185,6 +194,9 @@ STEP=$((STEP + 1))
 
 echo ">>> ${STEP}.  Copying sample local config files"
 for TARGET in $(find ${BASEDIR}/sample -type f 2>&1); do
+    if test ! -e "${BASEDIR}/${TARGET}"; then
+        continue
+    fi
     LOCAL_TARGET=.$(basename ${TARGET})
     LOCAL_TARGET_ORIG=.$(basename ${TARGET}).orig
     if test "x${BY_FORCE}" == "xf"; then
@@ -202,12 +214,12 @@ done
 STEP=$((STEP + 1))
 
 echo ">>> ${STEP}.  Installing additional softwares"
-if test "${OSNAME}" = "Linux"; then
+if test "${OSNAME}" = "Linux" -o "${OSNAME}" = "FreeBSD"; then
     ADDITIONAL_SOFTWARES="curl vim-nox tmux gnupg2 vlock"
     echo "    installing ${ADDITIONAL_SOFTWARES} ..."
     sudo apt update && sudo apt install -y ${ADDITIONAL_SOFTWARES}
 
-    if ! which rvm | grep rvm >/dev/null 2>&1; then
+    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
         echo "    installing rvm ..."
         curl -sSL https://rvm.io/mpapis.asc | sudo gpg2 --import -
         curl -sSL https://rvm.io/pkuczynski.asc | sudo gpg2 --import -
@@ -225,7 +237,7 @@ if test "${OSNAME}" = "Linux"; then
         gem install rail"
     fi
 
-    if ! which tmuxinator | grep tmuxinator >/dev/null 2>&1; then
+    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
         echo "    installing tmuxinator ..."
         sudo su - ${USER} sh -c "source /etc/profile.d/rvm.sh; gem install tmuxinator"
     fi
@@ -233,7 +245,7 @@ elif test "${OSNAME}" = "Darwin"; then
     ADDITIONAL_SOFTWARES="tmux gnupg"
     echo "    installing ${ADDITIONAL_SOFTWARES} ..."
 
-    if ! which rvm | grep rvm >/dev/null 2>&1; then
+    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
         echo "    installing rvm ..."
         curl -sSL https://rvm.io/mpapis.asc | sudo gpg --import -
         curl -sSL https://rvm.io/pkuczynski.asc | sudo gpg --import -
@@ -251,22 +263,22 @@ elif test "${OSNAME}" = "Darwin"; then
         gem install rail"
     fi
 
-    if ! which brew | grep brew >/dev/null 2>&1; then
+    if ! ${WHICH} brew | grep brew >/dev/null 2>&1; then
         echo "    installing homebrew..."
         ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
-    if ! which tmuxinator | grep tmuxinator >/dev/null 2>&1; then
+    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
         echo "    installing tmuxinator ..."
         sudo su - ${USER} sh -c "source /etc/profile.d/rvm.sh; gem install tmuxinator"
     fi
 
-    if ! which gpg | grep gpg >/dev/null 2>&1; then
+    if ! ${WHICH} gpg | grep gpg >/dev/null 2>&1; then
         echo "    installing gnupg ..."
         brew install gnupg
     fi
 elif echo ${OSNAME} | grep -i cygwin 2>&1 >/dev/null; then
-    if ! which rvm | grep rvm >/dev/null 2>&1; then
+    if ! ${WHICH} rvm | grep rvm >/dev/null 2>&1; then
         curl -sSL https://rvm.io/mpapis.asc | gpg --import -
         curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
         curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
@@ -283,7 +295,7 @@ elif echo ${OSNAME} | grep -i cygwin 2>&1 >/dev/null; then
         gem install rail"
     fi
 
-    if ! which tmuxinator | grep tmuxinator >/dev/null 2>&1; then
+    if ! ${WHICH} tmuxinator | grep tmuxinator >/dev/null 2>&1; then
         echo "    installing tmuxinator ..."
         sh -c "source ${HOME}/.rvm/scripts/rvm; gem install tmuxinator"
     fi
