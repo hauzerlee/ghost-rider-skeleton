@@ -1,0 +1,10 @@
+# 其他需要在 bashrc.local 之前执行的 rc 文件列表
+# other rc files should be executed before bashrc.local
+OTHER_BASHRCS="~/.bashrc.d/bashrc.aliases ~/.bashrc.d/bashrc.github ~/.bashrc.d/bashrc.go ~/.bashrc.d/bashrc.colors"
+
+# github base dir
+GITHUB_BASE_DIR=${HOME}/github.com
+
+OSNAME=$(uname -s)
+
+# vim: set sts=4 sw=4 et ft=sh:

@@ -55,6 +55,13 @@ done
 #echo "done"
 STEP=$((STEP + 1))
 
+echo ">>> ${STEP}.  Deploying bashrc.vars ..."
+if test ! -e ~/.bashrc.d/bashrc.vars -o "x${BY_FORCE}" == "xf"; then
+    cp ~/.bashrc.d/bashrc.vars.sample ~/.bashrc.d/bashrc.vars
+else
+    echo "exists, skip"
+fi
+STEP=$((STEP + 1))
 
 TARGETS="gitconfig"
 cd ${HOME}
