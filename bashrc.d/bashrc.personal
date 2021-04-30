@@ -1,0 +1,104 @@
+test -f ~/.bashrc.d/bashrc.local.pre && source ~/.bashrc.d/bashrc.local.pre
+
+test -f ~/.bashrc.d/bashrc.vars && source ~/.bashrc.d/bashrc.vars
+
+if  test -x /usr/bin/which; then
+    WHICH=/usr/bin/which
+elif  test -x /bin/which; then
+    WHICH=/bin/which
+fi
+
+############################################################
+### add these lines into ~/.bashrc && remove leading '#'
+### additional personal runtime config -- personal
+#test -f ~/.bashrc.personal && source ~/.bashrc.personal
+############################################################
+
+OSNAME=$(uname -s)
+if test "${OSNAME}" = "Linux"; then
+    alias ls='ls --color'
+elif test "${OSNAME}" = "Darwin"; then
+    alias ls='ls -G'
+fi
+alias grep='grep --color=auto'
+
+if test "${TERM}" != "linux"; then
+    parse_git_branch_for_prompt() {
+        branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        if test -z "${branch}"; then
+            return
+        fi
+        echo -e "(${branch}) "
+    }
+    export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;36m\]\w\[\e[00m\]\n\[\e[01;33m\]\$(parse_git_branch_for_prompt)\[\e[00m\]\$ "
+fi
+
+shopt -s cdspell
+shopt -s no_empty_cmd_completion
+shopt -s extglob
+
+export HISTCONTROL=ignoredups:erasedups
+export HISTFILESIZE=50000000
+
+export EDITOR=vim
+export VISUAL=vim
+
+# Virtualenvwrapper
+export WORKON_HOME=${HOME}/.virtualenvs
+if test -z "${VIRTUALENVWRAPPER_PYTHON}"; then
+    if test "${OSNAME}" = "Darwin"; then
+        export VIRTUALENVWRAPPER_PYTHON=$(${WHICH} python2.7)
+    fi
+fi
+if test -z "${VIRTUAL_ENV}"; then
+    if ! type workon >/dev/null 2>&1; then
+        if test -f /usr/local/bin/virtualenvwrapper.sh; then
+            source /usr/local/bin/virtualenvwrapper.sh
+        fi
+    fi
+    if type workon >/dev/null 2>&1; then
+        test ! -z "${VIRTUALENV_NAME}" && workon ${VIRTUALENV_NAME}
+    fi
+fi
+
+# 用于执行其他的 bashrc 文件
+if test ! -z "${OTHER_BASHRCS}"; then
+    for f in ${OTHER_BASHRCS}; do
+        test -f ${f} && source ${f}
+    done
+fi
+
+function clonegithub()
+{
+    target=${1}
+    test -z "${target}" && echo "Usage: ${0} git@github.com:owner/project.git|https://github.com/owner/project.git" && return
+
+    if ! (echo ${target} | grep "github.com" >/dev/null 2>&1); then
+        echo "ERROR: ${target} is NOT github url. exit"
+        return
+    fi
+
+    #target_dir=${GITHUB_BASE_DIR}/$(echo $target | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\).git,\2/\3,")
+    target_dir=${GITHUB_BASE_DIR}/$(echo $target | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\)\(.git\)\?,\2,")
+    if test "${OSNAME}" = "Linux"; then
+        target_dir=${GITHUB_BASE_DIR}/$(echo $target | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\)\(.git\),\2,")
+    elif test "${OSNAME}" = "Darwin"; then
+        if echo ${target} | grep ^https 2>&1 >/dev/null; then
+            target_dir=${GITHUB_BASE_DIR}/$(echo $target | sed "s,\(https://github.com/\)\(.*\)/\(.*\).git,\2,")
+        elif echo ${target} | grep ^git 2>&1 >/dev/null; then
+            target_dir=${GITHUB_BASE_DIR}/$(echo $target | sed "s,\(git@github.com:\)\(.*\)/\(.*\).git,\2,")
+        fi
+    fi
+    #target_dir=${GITHUB_BASE_DIR}/$(echo ${target} | cut -d: -f2 | cut -d/ -f1)
+
+    echo "Cloning ${target} into ${target_dir} ..."
+
+    test -d ${target_dir} || mkdir -p ${target_dir}
+    (cd ${target_dir} && git clone ${target})
+}
+
+export GPG_TTY=$(tty)
+
+test -f ~/.bashrc.d/bashrc.local && source ~/.bashrc.d/bashrc.local
+
+# vim: set sts=4 sw=4 et ft=sh:

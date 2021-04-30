@@ -1,0 +1,11 @@
+#
+# 存放仅在当前机器生效，并且在 bashrc.personal 之前执行的命令
+# commands or settings executed before any command and setting
+#     in bashrc.personal.
+# the commands and settings will take effecte only on current machine
+#
+# 复制本文件到 ~/.bashrc.d/bashrc.local.pre
+# copy this file to ~/.bashrc.d/bashrc.local.pre, and
+#     put commands or settings below
+#
+
