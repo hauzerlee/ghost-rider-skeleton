@@ -223,6 +223,7 @@ elif test "${OSNAME}" = "Darwin"; then
     ADDITIONAL_SOFTWARES="tmux gnupg"
     echo "    installing ${ADDITIONAL_SOFTWARES} ..."
 elif echo ${OSNAME} | grep -i cygwin 2>&1 >/dev/null; then
+    false
 fi
 
 
