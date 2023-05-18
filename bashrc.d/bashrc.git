@@ -1,0 +1,60 @@
+if test -z "${GITROOT}"; then
+    export GITROOT=~/git
+fi
+
+function  clonegit()
+{
+    repo=$1
+    repo_dir=$2
+    test -z "${repo}" && echo "Usage: ${0} git@gitserver.com:owner/project.git|https://gitserver.com/owner/project.git" && return
+
+    # echo "${repo}" | grep -iqE "\.git$" || repo="${repo}.git"
+    [[ "${repo}" = *.git ]] || repo="${repo}.git"
+
+    read hostname username reposname << __EOF__
+$(echo ${repo} | sed "s,\(.*@\|\(https\|http\|ssh\|git\)://\)\([a-z0-9\.-]\+\)\(:[0-9]\+/\|:\|/\)\(.*\)/\(.*\)\(\.git\),\3 \5 \6,")
+__EOF__
+    #echo hostname=${hostname}
+    #echo username=${username}
+    #echo reposname=${reposname}
+
+    target_dir=${GITROOT}/${hostname}/${username}
+
+    echo "Cloning ${repo} into ${target_dir}/ as ${reposname} ..."
+
+    test -d ${target_dir} || mkdir -p ${target_dir}
+    (cd ${target_dir} && git clone ${repo} ${repo_dir})
+}
+
+function  clonegithub()
+{
+    repo=$1
+    repo_dir=$2
+    test -z "${repo}" && echo "Usage: ${0} git@github.com:owner/project.git|https://github.com/owner/project.git" && return
+
+    if ! (echo ${repo} | grep "github.com" >/dev/null 2>&1); then
+        echo "ERROR: ${repo} is NOT github url. exit"
+        return
+    fi
+
+    #target_dir=${GITROOT}/github.com/$(echo $repo | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\).git,\2/\3,")
+    target_dir=${GITROOT}/github.com/$(echo $repo | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\)\(.git\)\?,\2,")
+    if test "${OSNAME}" = "GNU/Linux"; then
+        target_dir=${GITROOT}/github.com/$(echo $repo | sed "s,\(git@github.com:\|https://github.com/\)\(.*\)/\(.*\)\(.git\),\2,")
+    elif test "${OSNAME}" = "Darwin"; then
+        if echo ${repo} | grep ^https 2>&1 >/dev/null; then
+            target_dir=${GITROOT}/github.com/$(echo $repo | sed "s,\(https://github.com/\)\(.*\)/\(.*\).git,\2,")
+        elif echo ${repo} | grep ^git 2>&1 >/dev/null; then
+            target_dir=${GITROOT}/github.com/$(echo $repo | sed "s,\(git@github.com:\)\(.*\)/\(.*\).git,\2,")
+        fi
+    fi
+    #target_dir=${GITROOT}/github.com/$(echo ${repo} | cut -d: -f2 | cut -d/ -f1)
+
+    echo "Cloning ${repo} into ${target_dir} ..."
+
+    test -d ${target_dir} || mkdir -p ${target_dir}
+    (cd ${target_dir} && git clone ${repo} ${repo_dir})
+}
+
+# vim: set sts=4 sw=4 et ft=sh:
+
