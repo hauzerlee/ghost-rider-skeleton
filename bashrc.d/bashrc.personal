@@ -2,11 +2,12 @@ test -f ~/.bashrc.d/bashrc.local.pre && source ~/.bashrc.d/bashrc.local.pre
 
 test -f ~/.bashrc.d/bashrc.vars && source ~/.bashrc.d/bashrc.vars
 
-if  test -x /usr/bin/which; then
-    WHICH=/usr/bin/which
-elif  test -x /bin/which; then
-    WHICH=/bin/which
-fi
+#if  test -x /usr/bin/which; then
+#    WHICH=/usr/bin/which
+#elif  test -x /bin/which; then
+#    WHICH=/bin/which
+#fi
+WHICH="command -v"
 
 ############################################################
 ### add these lines into ~/.bashrc && remove leading '#'
@@ -22,7 +23,14 @@ if test "${TERM}" != "linux"; then
         fi
         echo -e "(${branch}) "
     }
-    export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;36m\]\w\[\e[00m\]\n\[\e[01;33m\]\$(parse_git_branch_for_prompt)\[\e[00m\]\$ "
+    if test "${DISTRO_NAME}" = "Kali"; then
+        prompt_color='\[\033[;32m\]'
+        info_color='\[\033[1;34m\]'
+        prompt_symbol=㉿
+        export PS1="$prompt_color┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(basename $VIRTUAL_ENV)$prompt_color)}($info_color\u$prompt_symbol\h$prompt_color)-[\[\033[0;1m\]\w$prompt_color]\n$prompt_color└─$info_color\[\e[01;33m\]\$(parse_git_branch_for_prompt)\[\e[00m\]\$\[\033[0m\] "
+    else
+        export PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;36m\]\w\[\e[00m\]\n\[\e[01;33m\]\$(parse_git_branch_for_prompt)\[\e[00m\]\$ "
+    fi
 fi
 
 shopt -s cdspell
@@ -42,7 +50,60 @@ if test ! -z "${OTHER_BASHRCS}"; then
     done
 fi
 
+function zprofiles
+{
+    OLD_WD=$(pwd)
+    if test "${1}" = "cd"; then
+        cd ${PROFILE_ROOT}
+        return
+    fi
+    (cd ${PROFILE_ROOT}
+    case "${1}" in
+        status)
+            git status
+            ;;
+        update)
+            git pull
+            ;;
+        commit)
+            if test "${2}" = "-m"; then
+                COMMIT_MESSAGE=${3}
+                shift 3
+                echo git commit -m "${COMMIT_MESSAGE}" $@
+                git commit -m "${COMMIT_MESSAGE}" $@
+            else
+                shift
+                git commit $@
+            fi
+            ;;
+        push)
+            git push
+            ;;
+        deploy)
+            shift 1
+            ./deploy.sh $@
+            ;;
+        *)
+            echo
+            echo "Usage: zprofiles [status|update|commit|push|deploy] [...]"
+            echo
+            git status
+            ;;
+    esac
+    cd ${OLD_WD})
+}
+
 export GPG_TTY=$(tty)
+
+if test ! -z "${OTHER_BASHRC_NAMES}"; then
+    for bashrc in ${OTHER_BASHRC_NAMES}; do
+        if test -f ${HOME}/.bashrc.d/bashrc.${bashrc}; then
+            source ${HOME}/.bashrc.d/bashrc.${bashrc}
+        fi
+    done
+fi
+
+test -f /etc/profile.d/rvm.sh && source /etc/profile.d/rvm.sh
 
 test -f ~/.bashrc.d/bashrc.local && source ~/.bashrc.d/bashrc.local
 
