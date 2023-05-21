@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BASEDIR=$(cd $(dirname $0); pwd)
+BASEDIR=$(realpath $(dirname ${0}))
 
 BY_FORCE=$(test "x${1}" == "x-f" && echo f || echo "")
 
