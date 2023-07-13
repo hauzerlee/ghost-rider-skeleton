@@ -1,14 +1,17 @@
+# 复制本文件到 ~/.bashrc.d/bashrc.vars
+# copy this file to ~/.bashrc.d/bashrc.vars, and
+export HOMEBREW_GITHUB_API_TOKEN=
+
+export OSNAME=$(uname -o 2>/dev/null || uname -o)
+
+export DISTRO_NAME=""
+
 # 其他需要在 bashrc.local 之前执行的 rc 文件列表
 # other rc files should be executed before bashrc.local
-export OTHER_BASHRC_NAMES="aliases git colors go screens.local"
+export OTHER_BASHRC_NAMES="aliases git colors"
 
 # 使用 clonegit 命令 clone 项目的根目录
 export GITROOT=~/git
-
-# github base dir
-GITHUB_BASE_DIR=${HOME}/github.com
-
-export OSNAME=$(uname -o 2>/dev/null || uname -o)
 
 export PROFILE_ROOT=${HOME}/.ghost-rider-skeleton
 
