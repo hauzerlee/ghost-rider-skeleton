@@ -1,0 +1,9 @@
+#
+# 存放仅在当前机器生效，并且在 bashrc.personal 最后执行的命令
+# commands or settings executed after all things in bashrc.personal,
+# the commands and settings will take effecte only on current machine
+#
+# 复制本文件到 ~/.bashrc.d/bashrc.local
+# copy this file to ~/.bashrc.d/bashrc.local, and
+#     put commands or settings below
+#

@@ -1,0 +1,18 @@
+# 复制本文件到 ~/.zshrc.d/zshrc.vars
+# Copy this file to ~/.zshrc.d/zshrc.vars and edit it
+export HOMEBREW_GITHUB_API_TOKEN=
+
+export OSNAME=$(uname -o 2>/dev/null || uname -o)
+
+export DISTRO_NAME=""
+
+# 其他需要在 zshrc.local 之前执行的 rc 文件列表
+# other rc files should be executed before zshrc.local
+export OTHER_ZSHRC_NAMES="git"
+
+# 使用 clonegit 命令 clone 项目的根目录
+export GITROOT=~/git
+
+export PROFILE_ROOT=${HOME}/.ghost-rider-skeleton
+
+# vim: set sts=4 sw=4 et ft=sh:
