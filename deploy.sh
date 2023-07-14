@@ -17,7 +17,7 @@ fi
 
 STEP=0
 
-TARGETS="bashrc.d vimrc"
+TARGETS="bashrc.d zshrc.d vimrc"
 cd ${HOME}
 echo ">>> ${STEP}.  Making links ..."
 for TARGET in ${TARGETS}; do
@@ -58,6 +58,14 @@ STEP=$((STEP + 1))
 echo ">>> ${STEP}.  Deploying bashrc.vars ..."
 if test ! -e ~/.bashrc.d/bashrc.vars -o "x${BY_FORCE}" == "xf"; then
     cp ~/.bashrc.d/bashrc.vars.sample ~/.bashrc.d/bashrc.vars
+else
+    echo "exists, skip"
+fi
+STEP=$((STEP + 1))
+
+echo ">>> ${STEP}.  Deploying zshrc.vars ..."
+if test ! -e ~/.zshrc.d/zshrc.vars -o "x${BY_FORCE}" == "xf"; then
+    cp ~/.zshrc.d/zshrc.vars.sample ~/.zshrc.d/zshrc.vars
 else
     echo "exists, skip"
 fi
