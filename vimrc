@@ -300,5 +300,31 @@ if has("autocmd")
   augroup END
 endif " has("autocmd")
 
+" 检查并安装 vim-plug 插件管理器
+" Check and Install vim-plug the plugin manager
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+			  \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" 加载插件
+" Enable plugins
+call plug#begin('~/.vim/plugged')
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+
+  Plug 'github/copilot.vim'
+  imap <silent><script><expr> <C-J> copilot#Accept("\<CR>")
+  let g:copilot_no_tab_map = v:true
+
+  " 检查并加载仅本地可用的插件
+  " Check and Enable Plugins only available locally
+  if filereadable(glob('~/.vimrc.d/vimrc.plug.local'))
+    source  ~/.vimrc.d/vimrc.plug.local
+  endif
+  
+call plug#end()
+
 " -- The End --
 "vim:shiftwidth=2 expandtab:

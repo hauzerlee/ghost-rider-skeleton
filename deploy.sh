@@ -17,7 +17,7 @@ fi
 
 STEP=0
 
-TARGETS="bashrc.d zshrc.d vimrc"
+TARGETS="bashrc.d zshrc.d vimrc vimrc.d"
 cd ${HOME}
 echo ">>> ${STEP}.  Making links ..."
 for TARGET in ${TARGETS}; do
