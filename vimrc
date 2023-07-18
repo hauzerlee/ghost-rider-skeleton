@@ -296,7 +296,7 @@ if has("autocmd")
     autocmd FileType python set foldmethod=indent
     autocmd FileType python set nowrap
     autocmd FileType javascript,css  set formatoptions=croql autoindent cindent smartindent comments=sr:/*,mb:*,el:*/,://
-    autocmd FileType javsscript  set foldmethod=marker foldmarker={,} commentstring=\ //\ %s
+    autocmd FileType javascript  set foldmethod=marker foldmarker={,} commentstring=\ //\ %s
   augroup END
 endif " has("autocmd")
 
